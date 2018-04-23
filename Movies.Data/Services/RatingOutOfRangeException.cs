@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Data
+namespace Movies.Data.Services
 {
-   public class InvalidCriteriaException : Exception
+   public class RatingOutOfRangeException : Exception
    {
 
    }

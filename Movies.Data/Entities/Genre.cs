@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Movies.Data.Entities
 {
@@ -12,6 +8,7 @@ namespace Movies.Data.Entities
 
       public int Name { get; set; }
 
+    
       public virtual ICollection<Movie> Movies { get; set; }
    }
 }

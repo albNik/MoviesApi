@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Data
+namespace Movies.Data.Services
 {
    public class Catalog
    {
@@ -15,7 +15,7 @@ namespace Movies.Data
          {
             if(string.IsNullOrEmpty(title) && string.IsNullOrEmpty(genres) && year == null)
             {
-               throw new InvalidCriteriaException();
+               throw new InvalidCriteriaException("Empty search filters");
             }
 
             var genresArr = genres.Split(',');
@@ -32,30 +32,58 @@ namespace Movies.Data
          return null;
       }
 
-
-      public IEnumerable<Movie> GetMoviesTop5()
+      public IEnumerable<object> GetMoviesTop5()
       {
          using(MoviesDbContext dbContext = new MoviesDbContext())
          {
-            return dbContext.Movies.OrderByDescending(x => x.Ratings.Sum(y => y.Value)).Take(5).ToList();
+            return dbContext.Movies
+                     .Where(x => x.Ratings.Any())
+                     .OrderByDescending(x => x.Ratings.Average(y => y.Value))
+                     .ThenBy(x => x.Title)
+                     .Take(5)
+                     .Select(x => new
+                     {
+                        x.Title,
+                        AverageRating = x.Ratings.Average(y => y.Value),
+                     })
+                     .ToList()
+                     .Select(x => new
+                     {
+                        x.Title,
+                        AverageRating = Math.Round(x.AverageRating * 2) / 2.0
+                     });
+
          }
 
       }
 
-      public IEnumerable<Movie> GetMoviesTop5forUser(int userId)
+      public IEnumerable<object> GetMoviesTop5forUser(int userId)
       {
          using(MoviesDbContext db = new MoviesDbContext())
          {
-            return db.Movies.OrderByDescending(x => x.Ratings.Where(y => y.UserId == userId).Sum(y => y.Value)).Take(5).ToList();
-         }
+            var user = db.Users.FirstOrDefault(x => x.Id == userId);
 
+            if(user == null)
+               throw new InvalidCriteriaException("User id non existent");
+
+            return user.Ratings
+                     .OrderByDescending(x => x.Value)
+                     .ThenBy(x => x.Movie.Title)
+                     .Take(5)
+                     .Select(x => new
+                     {
+                        x.Movie.Title,
+                        UserRating = x.Value,
+                     })
+                     .ToList();
+
+         }
       }
 
-
-      public void SetRating(int movieId, int userId, double rating)
+      public void SetRating(int movieId, int userId, int rating)
       {
          if(rating < 1 || rating > 5)
-            throw new ArgumentOutOfRangeException("rating");
+            throw new RatingOutOfRangeException();
 
          using(MoviesDbContext db = new MoviesDbContext())
          {
@@ -78,7 +106,7 @@ namespace Movies.Data
             }
             else
             {
-               throw new Exception("User or movie not Found");
+               throw new InvalidCriteriaException("User or movie not Found");
             }
          }
 

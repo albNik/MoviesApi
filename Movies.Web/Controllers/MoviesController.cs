@@ -1,4 +1,5 @@
 ﻿using Movies.Data;
+using Movies.Data.Services;
 using Movies.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -27,29 +28,16 @@ namespace Movies.Web.Controllers
          {
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex.Message);
          }
-
-         catch(Exception ex)
-         {
-            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
-         }
-
       }
 
       // /api/movies/gettop5
       public HttpResponseMessage GetTop5()
       {
-         try
-         {
-            Catalog cat = new Catalog();
-            var movies = cat.GetMoviesTop5();
-            if(!movies.Any())
-               return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Not Found");
-            return Request.CreateResponse(movies);
-         }
-         catch(Exception ex)
-         {
-            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
-         }
+         Catalog cat = new Catalog();
+         var movies = cat.GetMoviesTop5();
+         if(!movies.Any())
+            return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Not Found");
+         return Request.CreateResponse(movies);
       }
 
       // /api/movies/gettop5forUser?userId=1
@@ -66,11 +54,6 @@ namespace Movies.Web.Controllers
          catch(InvalidCriteriaException ex)
          {
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex.Message);
-         }
-
-         catch(Exception ex)
-         {
-            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
          }
       }
 
