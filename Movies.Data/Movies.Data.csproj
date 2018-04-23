@@ -54,6 +54,7 @@
     <Compile Include="Entities\Movie.cs" />
     <Compile Include="Entities\Rating.cs" />
     <Compile Include="Entities\User.cs" />
+    <Compile Include="InvalidCriteriaException.cs" />
     <Compile Include="Mapping\MovieMap.cs" />
     <Compile Include="Mapping\RatingMap.cs" />
     <Compile Include="Mapping\UserMap.cs" />

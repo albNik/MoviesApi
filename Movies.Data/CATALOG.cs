@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Movies.Data
 {
-   class Catalog
+   public class Catalog
    {
       public IEnumerable<Movie> GetMovies(string title = null, int? year = null, string genres = "")
       {
@@ -15,7 +15,7 @@ namespace Movies.Data
          {
             if(string.IsNullOrEmpty(title) && string.IsNullOrEmpty(genres) && year == null)
             {
-               throw new Exception("Bad Data");
+               throw new InvalidCriteriaException();
             }
 
             var genresArr = genres.Split(',');
@@ -66,7 +66,7 @@ namespace Movies.Data
                db.SaveChanges();
 
             }
-            else if (db.Users.Any(x=>x.Id==userId) && db.Movies.Any(x => x.Id == movieId))
+            else if(db.Users.Any(x => x.Id == userId) && db.Movies.Any(x => x.Id == movieId))
             {
                db.Ratings.Add(new Rating
                {

@@ -16,6 +16,7 @@ namespace Movies.Web
 
          GlobalConfiguration.Configuration.Formatters.Clear();
          GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
+         GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
       }
     }
 }
