@@ -9,7 +9,7 @@ namespace Movies.Data.Services
 {
    public class Catalog
    {
-      public IEnumerable<Movie> GetMovies(string title = null, int? year = null, string genres = "")
+      public IEnumerable<object> GetMovies(string title = null, int? year = null, string genres = "")
       {
          using(MoviesDbContext dbContext = new MoviesDbContext())
          {
@@ -20,16 +20,26 @@ namespace Movies.Data.Services
 
             var genresArr = genres.Split(',');
 
-            //   var t = dbContext.Movies.Where(x => x.Title.Contains(title) || x.Year == year || genres.Contains(x.Genres.Select(y => y.Name));
-
-
-
-
-            //    Console.WriteLine(t);
+            return dbContext.Movies.Where(x => x.Title.Contains(title)
+                                             || x.Year == year
+                                             || x.Genres.Any(y => genresArr.Contains(y.Name)))
+                                             .Select(x => new
+                                             {
+                                                x.Id,
+                                                x.Title,
+                                                x.Year,
+                                                AverageRating = x.Ratings.Average(y => y.Value),
+                                             })
+                                            .ToList()
+                                            .Select(x => new
+                                            {
+                                               x.Id,
+                                               x.Title,
+                                               x.Year,
+                                               AverageRating = Math.Round(x.AverageRating * 2) / 2.0
+                                            });
 
          }
-
-         return null;
       }
 
       public IEnumerable<object> GetMoviesTop5()
@@ -43,13 +53,17 @@ namespace Movies.Data.Services
                      .Take(5)
                      .Select(x => new
                      {
+                        x.Id,
                         x.Title,
+                        x.Year,
                         AverageRating = x.Ratings.Average(y => y.Value),
                      })
                      .ToList()
                      .Select(x => new
                      {
+                        x.Id,
                         x.Title,
+                        x.Year,
                         AverageRating = Math.Round(x.AverageRating * 2) / 2.0
                      });
 
