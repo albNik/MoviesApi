@@ -86,7 +86,9 @@ namespace Movies.Data.Services
                      .Take(5)
                      .Select(x => new
                      {
+                        x.Movie.Id,
                         x.Movie.Title,
+                        x.Movie.Year,
                         UserRating = x.Value,
                      })
                      .ToList();
